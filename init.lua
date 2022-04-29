@@ -59,7 +59,7 @@ function uart_callback(data)
 		print("Invalid PM1006 frame")
 		return
 	else
-		local json_str = string.format('{"pm25_ugm3": %d, "rssi_dbm": %d}', pm2_5, wifi.sta.getrssi())
+		local json_str = string.format('{"pm2_5_ugm3": %d, "rssi_dbm": %d}', pm2_5, wifi.sta.getrssi())
 		if not publishing then
 			publishing = true
 			gpio.write(ledpin, 0)
