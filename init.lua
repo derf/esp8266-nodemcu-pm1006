@@ -2,7 +2,7 @@ station_cfg = {}
 dofile("config.lua")
 
 delayed_restart = tmr.create()
-chip_id = node.chipid()
+chip_id = string.format("%06X", node.chipid())
 device_id = "esp8266_" .. chip_id
 mqtt_prefix = "sensor/" .. device_id
 mqttclient = mqtt.Client(device_id, 120)
@@ -73,8 +73,8 @@ function uart_callback(data)
 end
 
 function hass_register()
-	local hass_device = string.format('{"connections":[["mac","%s"]],"identifiers":["%s"],"model":"ESP8266","name":"ESP8266 PM1006","manufacturer":"DIY"}', wifi.sta.getmac(), device_id)
-	local hass_entity_base = string.format('"device":%s,"state_topic":"%s/data","expire_after":600', hass_device, mqtt_prefix)
+	local hass_device = string.format('{"connections":[["mac","%s"]],"identifiers":["%s"],"model":"ESP8266 + PM1006","name":"Vindriktning %s","manufacturer":"derf"}', wifi.sta.getmac(), device_id, chip_id)
+	local hass_entity_base = string.format('"device":%s,"state_topic":"%s/data","expire_after":60', hass_device, mqtt_prefix)
 	local hass_pm2_5 = string.format('{%s,"name":"PM2.5","object_id":"%s_pm2_5","unique_id":"%s_pm2_5","device_class":"pm25","unit_of_measurement":"µg/m³","value_template":"{{value_json.pm2_5_ugm3}}"}', hass_entity_base, device_id, device_id)
 	local hass_rssi = string.format('{%s,"name":"RSSI","object_id":"%s_rssi","unique_id":"%s_rssi","device_class":"signal_strength","unit_of_measurement":"dBm","value_template":"{{value_json.rssi_dbm}}","entity_category":"diagnostic"}', hass_entity_base, device_id, device_id)
 
