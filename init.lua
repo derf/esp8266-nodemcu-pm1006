@@ -35,7 +35,6 @@ end
 function connect_mqtt()
 	print("IP address: " .. wifi.sta.getip())
 	print("Connecting to MQTT " .. mqtt_host)
-	delayed_restart:stop()
 	mqttclient:on("connect", hass_register)
 	mqttclient:on("offline", log_restart)
 	mqttclient:lwt(mqtt_prefix .. "/state", "offline", 0, 1)
@@ -78,6 +77,8 @@ function hass_register()
 	local hass_pm2_5 = string.format('{%s,"name":"PM2.5","object_id":"%s_pm2_5","unique_id":"%s_pm2_5","device_class":"pm25","unit_of_measurement":"µg/m³","value_template":"{{value_json.pm2_5_ugm3}}"}', hass_entity_base, device_id, device_id)
 	local hass_rssi = string.format('{%s,"name":"RSSI","object_id":"%s_rssi","unique_id":"%s_rssi","device_class":"signal_strength","unit_of_measurement":"dBm","value_template":"{{value_json.rssi_dbm}}","entity_category":"diagnostic"}', hass_entity_base, device_id, device_id)
 
+	delayed_restart:stop()
+
 	mqttclient:publish("homeassistant/sensor/" .. device_id .. "/pm2_5/config", hass_pm2_5, 0, 1, function(client)
 		mqttclient:publish("homeassistant/sensor/" .. device_id .. "/rssi/config", hass_rssi, 0, 1, function(client)
 			collectgarbage()
@@ -86,6 +87,7 @@ function hass_register()
 	end)
 end
 
-delayed_restart:register(20 * 1000, tmr.ALARM_SINGLE, node.restart)
+delayed_restart:register(30 * 1000, tmr.ALARM_SINGLE, node.restart)
+delayed_restart:start()
 
 connect_wifi()
