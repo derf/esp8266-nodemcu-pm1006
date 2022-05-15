@@ -45,11 +45,23 @@ function uart_callback(data)
 	end
 end
 ```
+## Application Example
 
-See **init.lua** for an example. To use it, you need to create a **config.lua** file with WiFI and MQTT settings:
+**init.lua** is an example application with HomeAssistant integration.
+To use it, you need to create a **config.lua** file with WiFI and MQTT settings:
 
 ```lua
 station_cfg.ssid = "..."
 station_cfg.pwd = "..."
 mqtt_host = "..."
 ```
+
+Optionally, it can also publish readings to an InfluxDB.
+To do so, configure URL and attribute:
+
+```
+influx_url = "..."
+influx_attr = "..."
+```
+
+Readings will be stored as `vindriktning,[influx_attr] pm2_5_ugm3=...`
