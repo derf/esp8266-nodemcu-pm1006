@@ -1,8 +1,8 @@
 # ESP8266 Lua/NodeMCU module for Vindriktning PM1006 particle monitor
 
-This repository contains a Lua module (`pm1006.lua`) as well as ESP8266/NodeMCU
-MQTT gateway application example (`init.lua`) for the **PM1006** particulate
-matter (PM2.5) sensor found in IKEA Vindriktning.
+This repository contains an ESP8266 NodeMCU Lua module (`pm1006.lua`) as well
+as MQTT / HomeAssistant / InfluxDB integration example (`init.lua`) for the
+**PM1006** particulate matter (PM2.5) sensor found in IKEA Vindriktning.
 
 ## Dependencies
 
@@ -45,6 +45,7 @@ function uart_callback(data)
 	end
 end
 ```
+
 ## Application Example
 
 **init.lua** is an example application with HomeAssistant integration.
@@ -59,7 +60,7 @@ mqtt_host = "..."
 Optionally, it can also publish readings to an InfluxDB.
 To do so, configure URL and attribute:
 
-```
+```lua
 influx_url = "..."
 influx_attr = "..."
 ```
