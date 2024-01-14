@@ -74,5 +74,5 @@ influx_url = "..."
 influx_attr = "..."
 ```
 
-Readings will be stored as `vindriktning[influx_attr] pm2_5_ugm3=%d.%d`.
+Readings will be published as `vindriktning[influx_attr] pm2_5_ugm3=%d.%01d`.
 So, unless `influx_attr = ''`, it must start with a comma, e.g. `influx_attr = ',device=' .. device_id`.
