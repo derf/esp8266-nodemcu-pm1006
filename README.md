@@ -1,26 +1,34 @@
-# ESP8266 Lua/NodeMCU module for Vindriktning PM1006 particle monitor
+# ESP8266 Lua/NodeMCU module for Vindriktning PM1006 PM sensors
 
 This repository contains an ESP8266 NodeMCU Lua module (`pm1006.lua`) as well
-as MQTT / HomeAssistant / InfluxDB integration example (`init.lua`) for the
-**PM1006** particulate matter (PM2.5) sensor found in IKEA Vindriktning.
+as MQTT / HomeAssistant / InfluxDB integration example (`init.lua`) for
+**PM1006** particulate matter (PM2.5) sensors found in IKEA Vindriktning.
 
 ## Dependencies
 
 pm1006.lua has been tested with Lua 5.1 on NodeMCU firmware 3.0.1 (Release
-202112300746, integer build). Most practical applications (such as the example
-in init.lua) require the following modules.
+202112300746, integer build). It does not require any special modules.
+
+
+
+Most practical applications (such as the example in init.lua) need the
+following modules.
 
 * gpio
 * mqtt
 * node
 * softuart
 * tmr
-* uart
 * wifi
 
 ## Setup
 
-Connect the PM1006 sensor to your ESP8266/NodeMCU board as [documented by Hypfer](https://github.com/Hypfer/esp8266-vindriktning-particle-sensor).
+Connect the Vindriktning PCB to your ESP8266/NodeMCU board as [documented by
+Hypfer](https://github.com/Hypfer/esp8266-vindriktning-particle-sensor):
+
+* Vindriktning +5V → NodeMCU 5V
+* Vindriktning GND → ESP8266/NodeMCU GND
+* Vindriktning REST → NodeMCU D2 (ESP8266 GPIO4)
 
 If you use a different UART pin, you need to adjust the softuart.setup call in
 the examples provided in this repository to reflect that change. Keep in mind
@@ -38,8 +46,8 @@ port:on("data", 20, uart_callback)
 
 function uart_callback(data)
 	local pm2_5 = pm1006.parse_frame(data)
-	if pm25i ~= nil then
-		-- pm2_5 contains PM2.5 value in µg/m³
+	if pm2_5 ~= nil then
+		-- pm2_5 : PM2.5 concentration [µg/m³]
 	else
 		-- invalid frame header or checksum
 	end
@@ -48,16 +56,17 @@ end
 
 ## Application Example
 
-**init.lua** is an example application with HomeAssistant integration.
-To use it, you need to create a **config.lua** file with WiFI and MQTT settings:
+**init.lua** is an example application with HomeAssistant integration. It uses
+oversampling to smoothen readings, and only reports the average of every group
+of ten readings. To use it, you need to create a **config.lua** file with WiFI
+and MQTT settings:
 
 ```lua
-station_cfg.ssid = "..."
-station_cfg.pwd = "..."
+station_cfg = {ssid = "...", pwd = "..."}
 mqtt_host = "..."
 ```
 
-Optionally, it can also publish readings to an InfluxDB.
+Optionally, it can also publish readings to InfluxDB.
 To do so, configure URL and attribute:
 
 ```lua
@@ -65,4 +74,5 @@ influx_url = "..."
 influx_attr = "..."
 ```
 
-Readings will be stored as `vindriktning,[influx_attr] pm2_5_ugm3=...`
+Readings will be stored as `vindriktning[influx_attr] pm2_5_ugm3=%d.%d`.
+So, unless `influx_attr = ''`, it must start with a comma, e.g. `influx_attr = ',device=' .. device_id`.
