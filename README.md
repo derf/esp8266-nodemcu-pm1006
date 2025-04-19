@@ -55,25 +55,19 @@ end
 
 ## Application Example
 
-**init.lua** is an example application with HomeAssistant integration. It uses
-oversampling to smoothen readings, and only reports the average of every group
-of ten readings. To use it, you need to create a **config.lua** file with WiFI
-and MQTT settings:
+**init.lua** is an example application with optional HomeAssistant and InfluxDB integration.
+It uses oversampling to smoothen readings, and only reports the average of every group of ten readings.
+To use it, you need to create a **config.lua** file with WiFI and MQTT/InfluxDB settings:
 
 ```lua
 station_cfg = {ssid = "...", pwd = "..."}
 mqtt_host = "..."
-```
-
-Optionally, it can also publish readings to InfluxDB.
-To do so, configure URL and attribute:
-
-```lua
 influx_url = "..."
 influx_attr = "..."
 ```
 
-Readings will be published as `vindriktning[influx_attr] pm2_5_ugm3=%d.%01d`.
+Both `mqtt_host` and `influx_url` are optional, though it does not make much sense to specify neither.
+InfluxDB readings will be published as `vindriktning[influx_attr] pm2_5_ugm3=%d.%01d`.
 So, unless `influx_attr = ''`, it must start with a comma, e.g. `influx_attr = ',device=' .. device_id`.
 
 ## Resources
